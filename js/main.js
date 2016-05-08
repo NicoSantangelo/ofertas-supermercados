@@ -36,11 +36,17 @@
     }
   }
 
-  function Supermarket(supermarket, src) {
+  function Supermarket(supermarket, url) {
     this.supermarket = supermarket
+    this.url = url
+    this.yql = new YQL(url)
   }
 
   Supermarket.prototype = {
+    select: function (xpath) {
+      return this.yql.select(xpath)
+    },
+
     appendImage: function (attrs) {
       var img = document.createElement('img')
       img.src = attrs.src
@@ -48,31 +54,53 @@
       this.append(img)
     },
 
-    append: function (el) {
-      this.$wrapper().append(el).appendTo('#js-' + this.supermarket + '-items')
+    appendIframe: function () {
+      var iframe = document.createElement('iframe')
+      iframe.src = this.url
+      iframe.width = '100%'
+      iframe.height = '500'
+      this.append(iframe, 'col-xs-10')
     },
 
-    $wrapper: function () {
-      return jQuery('<div>', { 'class': 'col-xs-12 col-sm-6 col-md-4' })
+    append: function (el, wrapperClass) {
+      this.$wrapper(wrapperClass).append(el).appendTo('#js-' + this.supermarket + '-items')
+    },
+
+    $wrapper: function (className) {
+      className = (className || 'col-xs-12 col-sm-6 col-md-4') + ' supermarket-col'
+      return jQuery('<div>', { 'class': className })
     }
   }
+
+  function Carrefour() {
+    Supermarket.call(this, 'carrefour', 'http://www.carrefour.com.ar/promociones')
+  }
+  Carrefour.prototype = Object.create(Supermarket.prototype)
+
+  function Disco() {
+    Supermarket.call(this, 'disco', 'http://www.disco.com.ar/ofertas-Capital-Federal-y-GBA_26.html')
+  }
+  Disco.prototype = Object.create(Supermarket.prototype)
+
+  function Dia() {
+    Supermarket.call(this, 'dia', 'https://www.supermercadosdia.com.ar/ahorramesdia/')
+  }
+  Dia.prototype = Object.create(Supermarket.prototype)
 
 
   //
   // Carrefour
   //
-  var carrefour = new Supermarket('carrefour')
-  var carrefourQuery = new YQL('http://www.carrefour.com.ar/promociones')
-  carrefourQuery.select('//div[contains(@class, "promo-landing-content-principal-image")]/img').done(function (results) {
+  var carrefour = new Carrefour()
+  carrefour.select('//div[contains(@class, "promo-landing-content-principal-image")]/img').done(function (results) {
     results.img.forEach(carrefour.appendImage.bind(carrefour))
   })
 
   //
   // Disco
   //
-  var disco = new Supermarket('disco')
-  var discoQuery = new YQL('http://www.disco.com.ar/ofertas-Capital-Federal-y-GBA_26.html')
-  discoQuery.select('//li[@class="thumbnails"]/img').done(function (results) {
+  var disco = new Disco()
+  disco.select('//li[@class="thumbnails"]/img').done(function (results) {
     results.img.map(function (img) {
       return {
         src: 'http://www.disco.com.ar/' + img.src.replace('/small/', '/org/')
@@ -83,12 +111,10 @@
   //
   // Dia
   //
-  var dia = new Supermarket('dia')
-  var diaQuery = new YQL('https://www.supermercadosdia.com.ar/ahorramesdia/')
-  diaQuery.select('//img[contains(@class, "aligncenter")]').done(function (results) {
+  var dia = new Dia()
+  dia.select('//img[contains(@class, "aligncenter")]').done(function (results) {
     dia.appendImage(results.img)
   }).fail(function (error) {
-    var $notice = jQuery('<small>', { text: 'No se pudo obtener los datos de Dia' })
-    dia.append($notice)
+    dia.appendIframe()
   })
 })()

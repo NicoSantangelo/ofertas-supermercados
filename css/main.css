@@ -1,3 +1,11 @@
 .inline {
   display: inline-block;
 }
+
+.main {
+  padding: 20px 0;
+}
+
+.supermarket-col {
+  margin-bottom: 15px;
+}
