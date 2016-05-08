@@ -36,85 +36,76 @@
     }
   }
 
-  function Supermarket(supermarket, url) {
-    this.supermarket = supermarket
-    this.url = url
-    this.yql = new YQL(url)
+  var Column = function (type) {
+    this.type = type
+    this.container = '#js-' + this.type + '-items'
   }
 
-  Supermarket.prototype = {
-    select: function (xpath) {
-      return this.yql.select(xpath)
+  Column.prototype = {
+    appendImages: function(images) {
+      images.forEach(this.appendImage.bind(this))
     },
 
-    appendImage: function (attrs) {
+    appendImage: function(attrs) {
       var img = document.createElement('img')
       img.src = attrs.src
       img.className = 'img-responsive'
-      this.append(img)
+
+      jQuery('<div>', { 'class': this.addBaseClass('col-xs-12 col-sm-6 col-md-4') })
+        .append(img)
+        .appendTo(this.container)
     },
 
-    appendIframe: function () {
+    appendIframe: function (attrs) {
       var iframe = document.createElement('iframe')
-      iframe.src = this.url
-      iframe.width = '100%'
-      iframe.height = '500'
-      this.append(iframe, 'col-xs-10')
+      iframe.src = attrs.src
+      iframe.width = attrs.width
+      iframe.height = attrs.height
+
+      jQuery('<div>', { 'class': this.addBaseClass('col-xs-10') })
+        .append(iframe)
+        .appendTo(this.container)
     },
 
-    append: function (el, wrapperClass) {
-      this.$wrapper(wrapperClass).append(el).appendTo('#js-' + this.supermarket + '-items')
-    },
-
-    $wrapper: function (className) {
-      className = (className || 'col-xs-12 col-sm-6 col-md-4') + ' supermarket-col'
-      return jQuery('<div>', { 'class': className })
+    addBaseClass: function (className) {
+      return className + ' ' + this.type
     }
   }
-
-  function Carrefour() {
-    Supermarket.call(this, 'carrefour', 'http://www.carrefour.com.ar/promociones')
-  }
-  Carrefour.prototype = Object.create(Supermarket.prototype)
-
-  function Disco() {
-    Supermarket.call(this, 'disco', 'http://www.disco.com.ar/ofertas-Capital-Federal-y-GBA_26.html')
-  }
-  Disco.prototype = Object.create(Supermarket.prototype)
-
-  function Dia() {
-    Supermarket.call(this, 'dia', 'https://www.supermercadosdia.com.ar/ahorramesdia/')
-  }
-  Dia.prototype = Object.create(Supermarket.prototype)
 
 
   //
   // Carrefour
   //
-  var carrefour = new Carrefour()
-  carrefour.select('//div[contains(@class, "promo-landing-content-principal-image")]/img').done(function (results) {
-    results.img.forEach(carrefour.appendImage.bind(carrefour))
-  })
+  new YQL('http://www.carrefour.com.ar/promociones')
+    .select('//div[contains(@class, "promo-landing-content-principal-image")]/img')
+    .done(function (results) {
+      new Column('carrefour').appendImages(results.img)
+    })
 
   //
-  // Disco
+  // Disco ahorrames
   //
-  var disco = new Disco()
-  disco.select('//li[@class="thumbnails"]/img').done(function (results) {
-    results.img.map(function (img) {
-      return {
-        src: 'http://www.disco.com.ar/' + img.src.replace('/small/', '/org/')
-      }
-    }).forEach(disco.appendImage.bind(disco))
-  })
+  new YQL('http://www.disco.com.ar/ofertas-Capital-Federal-y-GBA_26.html')
+    .select('//li[@class="thumbnails"]/img')
+    .done(function (results) {
+      var images = results.img.map(function (img) {
+        return { src: 'http://www.disco.com.ar/' + img.src.replace('/small/', '/org/') }
+      })
+      new Column('disco').appendImages(images)
+    })
 
   //
   // Dia
   //
-  var dia = new Dia()
-  dia.select('//img[contains(@class, "aligncenter")]').done(function (results) {
-    dia.appendImage(results.img)
-  }).fail(function (error) {
-    dia.appendIframe()
-  })
+  new YQL('https://www.supermercadosdia.com.ar/ahorramesdia/')
+    .select('//img[contains(@class, "aligncenter")]')
+    .done(function (results) {
+      new Column('dia').appendImage(results.img)
+    }).fail(function (error) {
+      new Column('dia').appendIframe({
+        src   : 'https://www.supermercadosdia.com.ar/ahorramesdia/',
+        width : '100%',
+        height: '500'
+      })
+    })
 })()
