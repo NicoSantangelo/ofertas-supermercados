@@ -108,4 +108,19 @@
         height: '500'
       })
     })
+
+  //
+  // Coto semanal
+  //
+  new YQL('http://www.coto.com.ar/ofertas/semanal/ie.html')
+    .select('//div[contains(@class, "list_images")]/img')
+    .done(function (results) {
+      var images = results.img.map(function (img) {
+        return { src: 'http://www.coto.com.ar/ofertas/semanal/' + img.src }
+      })
+      new Column('coto').appendImages(images)
+    })
+
+  // Coto marca lider ( http://www.coto.com.ar/ofertas/marca-lider/ie.html )
+  // Coto precios imposibles ( parse http://www.coto.com.ar/ofertas/ //div[@class="deck"/div] )
 })()
