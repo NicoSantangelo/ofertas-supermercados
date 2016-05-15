@@ -36,6 +36,26 @@
     }
   }
 
+  //
+  //
+
+  var Template = function (rootSelector) {
+    this.rootSelector = rootSelector || 'body'
+    this.html = document.getElementById('js-supermarket-template').innerHTML
+    this.template = new t(this.html)
+  }
+
+  Template.prototype = {
+    render: function (data) {
+      jQuery(this.rootSelector).append(
+        this.template.render(data)
+      )
+    }
+  }
+
+  //
+  //
+
   var Column = function (type) {
     this.type = type
     this.container = '#js-' + this.type + '-items'
@@ -51,7 +71,7 @@
       img.src = attrs.src
       img.className = 'img-responsive'
 
-      jQuery('<div>', { 'class': this.addBaseClass('col-xs-12 col-sm-6 col-md-4') })
+      jQuery('<div>', { 'class': 'col-xs-12 col-sm-6 col-md-4' })
         .append(img)
         .appendTo(this.container)
     },
@@ -62,64 +82,85 @@
       iframe.width = attrs.width
       iframe.height = attrs.height
 
-      jQuery('<div>', { 'class': this.addBaseClass('col-xs-10') })
+      jQuery('<div>', { 'class': 'col-xs-10' })
         .append(iframe)
         .appendTo(this.container)
-    },
-
-    addBaseClass: function (className) {
-      return className + ' ' + this.type
     }
   }
 
+  //
+  // Render
+  //
 
-  //
-  // Carrefour
-  //
-  new YQL('http://www.carrefour.com.ar/promociones')
-    .select('//div[contains(@class, "promo-landing-content-principal-image")]/img')
-    .done(function (results) {
-      new Column('carrefour').appendImages(results.img)
-    })
+  var SUPERMARKETS = [
+    {
+      key   : 'carrefour',
+      name  : 'Carrefour',
+      link  : 'http://www.carrefour.com.ar/promociones',
+      select: '//div[contains(@class, "promo-landing-content-principal-image")]/img',
+      extractOffers: function (results) { return results.img.length ? results.img : [results.img] }
+    },
+    {
+      key   : 'disco',
+      name  : 'Disco',
+      link  : 'http://www.disco.com.ar/ofertas-Capital-Federal-y-GBA_26.html',
+      select: '//li[@class="thumbnails"]/img',
+      extractOffers: function (results) {
+        return results.img.map(function (img) {
+          return { src: 'http://www.disco.com.ar/' + img.src.replace('/small/', '/org/') }
+        })
+      }
+    },
+    {
+      key   : 'dia',
+      name  : 'Dia',
+      link  : 'https://www.supermercadosdia.com.ar/ahorramesdia/',
+      select: '//img[contains(@class, "aligncenter")]',
+      extractOffers: function (results) { return results.img }
+    },
+    {
+      key   : 'coto',
+      name  : 'Coto',
+      link  : 'http://www.coto.com.ar/ofertas/semanal/ie.html',
+      select: '//div[contains(@class, "list_images")]/img',
+      extractOffers: function (results) {
+        return results.img.map(function (img) {
+          return { src: 'http://www.coto.com.ar/ofertas/semanal/' + img.src }
+        })
+      }
+    },
+    {
+      key   : 'jumbo',
+      name  : 'Jumbo',
+      link  : 'https://www.jumbo.com.ar/Comprar/Home.aspx#_atCategory=true&_atGrilla=false&_id=5',
+      select: '//div[@class="owl-item"]/img[@class="desktop"]',
+      extractOffers: function (results) { return results.img }
+    }
+  ]
 
-  //
-  // Disco ahorrames
-  //
-  new YQL('http://www.disco.com.ar/ofertas-Capital-Federal-y-GBA_26.html')
-    .select('//li[@class="thumbnails"]/img')
-    .done(function (results) {
-      var images = results.img.map(function (img) {
-        return { src: 'http://www.disco.com.ar/' + img.src.replace('/small/', '/org/') }
+  var template = new Template('#main')
+
+
+  SUPERMARKETS.forEach(function (supermarket) {
+    template.render(supermarket)
+
+    new YQL(supermarket.link)
+      .select(supermarket.select)
+      .done(function (results) {
+        var images = supermarket.extractOffers(results)
+        new Column(supermarket.key).appendImages(images)
       })
-      new Column('disco').appendImages(images)
-    })
-
-  //
-  // Dia
-  //
-  new YQL('https://www.supermercadosdia.com.ar/ahorramesdia/')
-    .select('//img[contains(@class, "aligncenter")]')
-    .done(function (results) {
-      new Column('dia').appendImage(results.img)
-    }).fail(function (error) {
-      new Column('dia').appendIframe({
-        src   : 'https://www.supermercadosdia.com.ar/ahorramesdia/',
-        width : '100%',
-        height: '500'
+      .fail(function (error) {
+        new Column(supermarket.key).appendIframe({
+          src   : supermarket.link,
+          width : '100%',
+          height: '500'
+        })
       })
-    })
+  })
 
-  //
-  // Coto semanal
-  //
-  new YQL('http://www.coto.com.ar/ofertas/semanal/ie.html')
-    .select('//div[contains(@class, "list_images")]/img')
-    .done(function (results) {
-      var images = results.img.map(function (img) {
-        return { src: 'http://www.coto.com.ar/ofertas/semanal/' + img.src }
-      })
-      new Column('coto').appendImages(images)
-    })
+  document.getElementById('js-main-loading').remove()
+
 
   // Coto marca lider ( http://www.coto.com.ar/ofertas/marca-lider/ie.html )
   // Coto precios imposibles ( parse http://www.coto.com.ar/ofertas/ //div[@class="deck"/div] )

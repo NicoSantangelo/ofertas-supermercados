@@ -8,60 +8,28 @@
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-  <div class="container main">
-    <div id="carrefour">
-      <div class="row">
-        <div class="col-xs-12">
-          <h1 class="inline">Carrefour</h1>&nbsp;
-          <small><a href="http://www.carrefour.com.ar/promociones">(link)</a></small>
+  <div id="main" class="container main">
+    <template id="js-supermarket-template">
+      <div id="{{=key}}">
+        <div class="row">
+          <div class="col-xs-12">
+            <h1 class="inline">{{=name}}</h1>&nbsp;
+            <small><a href="{{=link}}">(link)</a></small>
+          </div>
         </div>
+
+        <div id="js-{{=key}}-items" class="row supermarket-items"></div>
       </div>
+    </template>
 
-      <div id="js-carrefour-items" class="row"></div>
-    </div>
-
-
-    <div id="disco">
-      <div class="row">
-        <div class="col-xs-12">
-          <h1 class="inline">Disco (CABA y GBA)</h1>&nbsp;
-          <small><a href="http://www.disco.com.ar/ofertas-Capital-Federal-y-GBA_26.html">(link)</a></small>
-        </div>
-      </div>
-
-      <div id="js-disco-items" class="row"></div>
-    </div>
-
-
-    <div id="dia">
-      <div class="row">
-        <div class="col-xs-12">
-          <h1 class="inline">Dia (Ahorrames)</h1>&nbsp;
-          <small><a href="http://www.disco.com.ar/ofertas-Capital-Federal-y-GBA_26.html">(link)</a></small>
-        </div>
-      </div>
-
-      <div id="js-dia-items" class="row"></div>
-    </div>
-
-
-    <div id="coto">
-      <div class="row">
-        <div class="col-xs-12">
-          <h1 class="inline">Coto (semanal)</h1>&nbsp;
-          <small><a href="http://www.coto.com.ar/ofertas/semanal/ie.html">(link)</a></small>
-        </div>
-      </div>
-
-      <div id="js-coto-items" class="row"></div>
-    </div>
-  </div>
+    <span id="js-main-loading">Loading</span>
 
   <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"></script>
   <![endif]-->
   <script src="js/jquery-2.2.3.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
+  <script src="js/t.min.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
