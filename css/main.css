@@ -1,5 +1,5 @@
 body {
-  padding: 10px 0 20px;
+  padding: 10px 0 50px;
   position: relative;
 }
 
@@ -7,13 +7,42 @@ body {
   display: inline-block;
 }
 
+.placeholder {
+  height: 200px;
+  line-height: 200px;  
+  border-radius: 5px;
+  overflow: hidden;
+  background: #F2F2F2;
+  display: block;
+  text-align: center;
+}
+
+.loading:after {
+  content: ' ';
+  width: 32px;
+  height: 32px;
+  margin: auto;
+  display: block;
+  background: url(../img/loading.gif) no-repeat;
+}
+
 .supermarket {
   padding-top: 50px;
+}
+
+.supermarket-items {
+  min-height: 200px;
+  margin-top: 15px;
 }
 
 .supermarket-items > div {
   margin-bottom: 15px;
 }
+
+.supermarket-items > .loading:after {
+  margin-top: 84px;
+}
+
 
 /*
 * IMAGE GALLERY

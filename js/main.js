@@ -18,8 +18,6 @@
           q: this.buildQuery(xpath)
         }
       }).done(function (content) {
-        console.log("Got", content, "from YQL")
-
         if (content.query && content.query.count) {
           deferred.resolve(content.query.results)
         } else {
@@ -56,12 +54,13 @@
   //
   //
 
-  var Column = function (type) {
+  var HtmlContainer = function (type) {
     this.type = type
-    this.container = '#js-' + this.type + '-items'
+    this.id = 'js-' + this.type + '-items'
+    this.el = document.getElementById(this.id)
   }
 
-  Column.prototype = {
+  HtmlContainer.prototype = {
     appendImages: function(images) {
       images.forEach(this.appendImage.bind(this))
     },
@@ -78,18 +77,34 @@
 
       jQuery('<div>', { 'class': 'col-xs-12 col-sm-6 col-md-4' })
         .append($a)
-        .appendTo(this.container)
+        .appendTo(this.el)
     },
 
-    appendIframe: function (attrs) {
-      var iframe = document.createElement('iframe')
-      iframe.src = attrs.src
-      iframe.width = attrs.width
-      iframe.height = attrs.height
+    placeholder: function () {
+      jQuery('<div>', { 'class': 'col-xs-offset-1 col-xs-10 placeholder' })
+        .appendTo(this.el)
+    },
 
-      jQuery('<div>', { 'class': 'col-xs-10' })
-        .append(iframe)
-        .appendTo(this.container)
+    iframe: function (attrs) {
+      var $iframe = $('<iframe>', {
+        src: attrs.src,
+        width: attrs.width,
+        height: attrs.height
+      })
+      .css('display', 'none')
+
+      var $placeholder = jQuery(this.el)
+        .find('.placeholder.loading')
+        .append($iframe)
+
+      $iframe.load(function () {
+        $placeholder.removeClass('placeholder loading')
+        $iframe.slideDown()
+      })
+    },
+
+    loading: function () {
+      jQuery(this.el).find('.placeholder').addClass('loading')
     }
   }
 
@@ -145,30 +160,40 @@
 
   var template = new Template('#main')
 
-  var promises = SUPERMARKETS.map(function (supermarket) {
+  var promises = SUPERMARKETS.map(function (supermarket, index) {
     template.render(supermarket)
 
     return new YQL(supermarket.link)
       .select(supermarket.select)
       .done(function (results) {
         var images = supermarket.extractOffers(results)
-        new Column(supermarket.key).appendImages(images)
+        new HtmlContainer(supermarket.key).appendImages(images)
       })
       .fail(function (error) {
-        setTimeout(function () {
-          new Column(supermarket.key).appendIframe({
-            src   : supermarket.link,
-            width : '100%',
-            height: '500'
-          })
-        }, 1000)
+        var event = 'DOMContentLoaded load resize scroll.' + supermarket.key
+        var container = new HtmlContainer(supermarket.key)
+        container.placeholder()
+
+        $(window).on(event, function () {
+          if(isElementInViewport(container.el)) {
+            container.loading()
+
+            container.iframe({
+              src   : supermarket.link,
+              width : '100%',
+              height: '500'
+            })
+
+            $(window).off(event)
+          }
+        })
       })
   })
 
   jQuery.when.apply(jQuery, promises).always(function () {
     window.scrollTo(0, 0)
+    $('body').scrollspy({ target: '#navbar-supermarkets', offset: 60 })
     document.getElementById('js-main-loading').remove()
-    $('body').scrollspy({ target: '#navbar-supermarkets', offset: 50 })
   })
 
   $("#navbar-supermarkets ul li a[href^='#']").on('click', function(event) {
@@ -181,6 +206,17 @@
        window.location.hash = hash
     })
   })
+
+  function isElementInViewport(el) {
+    var rect = el.getBoundingClientRect()
+
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    )
+  }
 
   // Coto marca lider ( http://www.coto.com.ar/ofertas/marca-lider/ie.html )
   // Coto precios imposibles ( parse http://www.coto.com.ar/ofertas/ //div[@class="deck"/div] )
