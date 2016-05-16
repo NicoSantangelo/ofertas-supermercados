@@ -71,8 +71,13 @@
       img.src = attrs.src
       img.className = 'img-responsive'
 
+      var $a = jQuery('<a>', {
+        'href': attrs.src,
+        'data-lightbox': this.type
+      }).append(img)
+
       jQuery('<div>', { 'class': 'col-xs-12 col-sm-6 col-md-4' })
-        .append(img)
+        .append($a)
         .appendTo(this.container)
     },
 
@@ -112,13 +117,6 @@
       }
     },
     {
-      key   : 'dia',
-      name  : 'Dia',
-      link  : 'https://www.supermercadosdia.com.ar/ahorramesdia/',
-      select: '//img[contains(@class, "aligncenter")]',
-      extractOffers: function (results) { return results.img }
-    },
-    {
       key   : 'coto',
       name  : 'Coto',
       link  : 'http://www.coto.com.ar/ofertas/semanal/ie.html',
@@ -128,6 +126,13 @@
           return { src: 'http://www.coto.com.ar/ofertas/semanal/' + img.src }
         })
       }
+    },
+    {
+      key   : 'dia',
+      name  : 'Dia',
+      link  : 'https://www.supermercadosdia.com.ar/ahorramesdia/',
+      select: '//img[contains(@class, "aligncenter")]',
+      extractOffers: function (results) { return results.img }
     },
     {
       key   : 'jumbo',
@@ -140,27 +145,42 @@
 
   var template = new Template('#main')
 
-
-  SUPERMARKETS.forEach(function (supermarket) {
+  var promises = SUPERMARKETS.map(function (supermarket) {
     template.render(supermarket)
 
-    new YQL(supermarket.link)
+    return new YQL(supermarket.link)
       .select(supermarket.select)
       .done(function (results) {
         var images = supermarket.extractOffers(results)
         new Column(supermarket.key).appendImages(images)
       })
       .fail(function (error) {
-        new Column(supermarket.key).appendIframe({
-          src   : supermarket.link,
-          width : '100%',
-          height: '500'
-        })
+        setTimeout(function () {
+          new Column(supermarket.key).appendIframe({
+            src   : supermarket.link,
+            width : '100%',
+            height: '500'
+          })
+        }, 1000)
       })
   })
 
-  document.getElementById('js-main-loading').remove()
+  jQuery.when.apply(jQuery, promises).always(function () {
+    window.scrollTo(0, 0)
+    document.getElementById('js-main-loading').remove()
+    $('body').scrollspy({ target: '#navbar-supermarkets', offset: 50 })
+  })
 
+  $("#navbar-supermarkets ul li a[href^='#']").on('click', function(event) {
+   var hash = this.hash
+   event.preventDefault()
+
+    $('html, body').animate({
+      scrollTop: $(hash).offset().top
+    }, 300, function(){
+       window.location.hash = hash
+    })
+  })
 
   // Coto marca lider ( http://www.coto.com.ar/ofertas/marca-lider/ie.html )
   // Coto precios imposibles ( parse http://www.coto.com.ar/ofertas/ //div[@class="deck"/div] )

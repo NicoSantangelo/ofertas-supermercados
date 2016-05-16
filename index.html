@@ -5,12 +5,37 @@
   <title>Todas las ofertas de Supermercados</title>
 
   <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/lightbox.min.css">
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
+  <nav id="navbar-supermarkets" class="navbar navbar-default navbar-fixed-top navbar-inverse">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active">
+            <a href="#carrefour">Carrefour</a>
+          </li>
+          <li>
+            <a href="#disco">Disco</a>
+          </li>
+          <li>
+            <a href="#dia">Dia</a>
+          </li>
+          <li>
+            <a href="#coto">Coto</a>
+          </li>
+          <li>
+            <a href="#jumbo">Jumbo</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
   <div id="main" class="container main">
     <template id="js-supermarket-template">
-      <div id="{{=key}}">
+      <div id="{{=key}}" class="supermarket">
         <div class="row">
           <div class="col-xs-12">
             <h1 class="inline">{{=name}}</h1>&nbsp;
@@ -23,6 +48,7 @@
     </template>
 
     <span id="js-main-loading">Loading</span>
+  </div>
 
   <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/es5-shim/4.5.7/es5-shim.min.js"></script>
@@ -31,5 +57,12 @@
   <script src="js/bootstrap.min.js"></script>
   <script src="js/t.min.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/lightbox.custom.min.js"></script>
+  <script>
+    lightbox.option({
+      showImageNumberLabel: true,
+      albumLabel: '%1 / %2'
+    })
+  </script>
 </body>
 </html>

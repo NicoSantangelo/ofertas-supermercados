@@ -1,11 +1,90 @@
+body {
+  padding: 10px 0 20px;
+  position: relative;
+}
+
 .inline {
   display: inline-block;
 }
 
-.main {
-  padding: 20px 0;
+.supermarket {
+  padding-top: 50px;
 }
 
 .supermarket-items > div {
   margin-bottom: 15px;
+}
+
+/*
+* IMAGE GALLERY
+*/
+
+.supermarket-items a:after {
+    content: "ZOOM";
+    padding: 5px 7px 4px;
+    top: 7px;
+    left: 7px;
+    position: absolute;
+    border-radius: 5px 0px 0px 5px;
+
+    display: block;
+    opacity: 0;
+
+    font-weight: 400;
+    font-style: normal;
+    font-size: 11px;
+    line-height: 1;
+
+    background: #D94F5C;
+    color: #FFFFFF;
+
+    pointer-events: none;
+    -moz-transition: all 0.5s cubic-bezier( 0.5, 0.2, 0.5, 1 );
+    -o-transition: all 0.5s cubic-bezier( 0.5, 0.2, 0.5, 1 );
+    -webkit-transition: all 0.5s cubic-bezier( 0.5, 0.2, 0.5, 1 );
+    transition: all 0.5s cubic-bezier( 0.5, 0.2, 0.5, 1 );
+}
+.supermarket-items a:hover:after {
+  opacity: 1
+}
+
+
+.lb-data .lb-close {
+  top: -20px;
+  right: 20px;
+  position: absolute;
+  opacity: 1;
+}
+.lb-data .lb-close:hover {
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .lb-data .lb-close {
+    top: -50px;
+  }
+}
+
+.lb-nav {
+  height: inherit;
+  top: inherit;
+  bottom: -65px;
+}
+.lb-container .lb-nav a {
+  height: 40px;
+  opacity: 1;
+}
+.lb-container .lb-nav a:hover {
+  opacity: 0.7;
+}
+
+.lb-data .lb-details {
+  width: 100%;
+  text-align: center;
+}
+.lb-data .lb-number {
+  font-size: 16px;
+  bottom: -33px;
+  position: relative;
+  color: #FFF;
 }
