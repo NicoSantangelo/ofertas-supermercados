@@ -8,14 +8,28 @@
   }
 
   YQL.prototype = {
-    select: function (xpath) {
+    select: function (whereClause) {
+      return this.httpGet(
+        this.buildQuery(whereClause)
+      )
+    },
+
+    buildQuery: function (whereClause) {
+      var where = "where url='" + this.url + "'"
+      for(var prop in whereClause) {
+        where += " and " + prop + " = '" + whereClause[prop] + "'"
+      }
+      return "select * from html " + where
+    },
+
+    httpGet: function (query) {
       var deferred = jQuery.Deferred()
 
       jQuery.ajax({
         url: 'http://query.yahooapis.com/v1/public/yql',
         data: {
-          format: 'json',
-          q: this.buildQuery(xpath)
+          q: query,
+          format: 'json'
         }
       }).done(function (content) {
         if (content.query && content.query.count) {
@@ -26,11 +40,7 @@
       }).error(deferred.reject)
 
       return deferred.promise()
-    },
 
-    buildQuery: function (xpath) {
-      xpath = xpath ? " and xpath='" + xpath + "'" : ""
-      return "select * from html where url='" + this.url + "'" + xpath
     }
   }
 
@@ -164,7 +174,7 @@
     template.render(supermarket)
 
     return new YQL(supermarket.link)
-      .select(supermarket.select)
+      .select({ xpath: supermarket.select })
       .done(function (results) {
         var images = supermarket.extractOffers(results)
         new HtmlContainer(supermarket.key).appendImages(images)
