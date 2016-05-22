@@ -1,7 +1,4 @@
 (function() {
-  // TODO:
-  //  - ALT attrs
-
   function YQL(url) {
     if (!url) throw "You must provide an URL to scrape (YQL)."
     this.url = url
@@ -91,7 +88,7 @@
     },
 
     placeholder: function () {
-      jQuery('<div>', { 'class': 'col-xs-offset-1 col-xs-10 placeholder' })
+      jQuery('<div>', { 'class': 'col-xs-12 placeholder' }) //FUUUU
         .appendTo(this.el)
     },
 
@@ -191,7 +188,7 @@
             container.iframe({
               src   : supermarket.link,
               width : '100%',
-              height: '500'
+              height: '1000'
             })
 
             $(window).off(event)
@@ -206,7 +203,7 @@
     document.getElementById('js-main-loading').remove()
   })
 
-  $("#navbar-supermarkets ul li a[href^='#']").on('click', function(event) {
+  $(".js-supermarket-nav").on('click', function(event) {
    var hash = this.hash
    event.preventDefault()
 
@@ -215,6 +212,24 @@
     }, 300, function(){
        window.location.hash = hash
     })
+  })
+
+  $("#main").on('click', '.js-supermarket-hide', function(event) {
+    var selector = $(this).data('selector')
+
+    this.innerText = {
+      'Ocultar ↑': 'Mostrar ↓',
+      'Mostrar ↓': 'Ocultar ↑'
+    }[this.innerText]
+
+    $(selector).toggleClass('collapse')
+    event.preventDefault()
+  })
+
+  $("#main").on('click', '.js-caption-link', function(event) {
+    var selector = $(this).data('selector')
+    $(selector).click()
+    event.preventDefault()
   })
 
   function isElementInViewport(el) {
@@ -227,7 +242,4 @@
       rect.right <= (window.innerWidth || document.documentElement.clientWidth)
     )
   }
-
-  // Coto marca lider ( http://www.coto.com.ar/ofertas/marca-lider/ie.html )
-  // Coto precios imposibles ( parse http://www.coto.com.ar/ofertas/ //div[@class="deck"/div] )
 })()

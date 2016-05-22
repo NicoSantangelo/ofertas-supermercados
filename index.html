@@ -14,19 +14,19 @@
       <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
           <li class="active">
-            <a href="#carrefour">Carrefour</a>
+            <a class="js-supermarket-nav" href="#carrefour">Carrefour</a>
           </li>
           <li>
-            <a href="#disco">Disco</a>
+            <a class="js-supermarket-nav" href="#disco">Disco</a>
           </li>
           <li>
-            <a href="#coto">Coto</a>
+            <a class="js-supermarket-nav" href="#coto">Coto</a>
           </li>
           <li>
-            <a href="#dia">Dia</a>
+            <a class="js-supermarket-nav" href="#dia">Dia</a>
           </li>
           <li>
-            <a href="#jumbo">Jumbo</a>
+            <a class="js-supermarket-nav" href="#jumbo">Jumbo</a>
           </li>
         </ul>
       </div>
@@ -37,9 +37,19 @@
     <template id="js-supermarket-template">
       <div id="{{=key}}" class="supermarket">
         <div class="row">
-          <div class="col-xs-12">
+          <div class="col-xs-12 col-sm-8">
             <h1 class="inline">{{=name}}</h1>&nbsp;
-            <small><a href="{{=link}}">(link)</a></small>
+            <small><a href="{{=link}}">link</a></small>
+          </div>
+          <div class="hidden-xs col-sm-4 actions">
+            <a class="js-supermarket-toggle" href="{{=link}}">Cargar sitio</a>&nbsp;
+            <a class="js-supermarket-hide" href="#" data-selector="#js-{{=key}}-items, #{{=key}} .js-caption">Ocultar ↑</a>
+          </div>
+        </div>
+        
+        <div class="row js-caption text-center collapse">
+          <div class="col-xs-12">
+            <div class="small">Contenido oculto (<a href="#" class="js-caption-link" data-selector="#{{=key}} .js-supermarket-hide">Mostrar</a>)</div>
           </div>
         </div>
 

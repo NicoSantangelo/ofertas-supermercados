@@ -28,21 +28,36 @@ body {
 
 .supermarket {
   padding-top: 50px;
+  overflow: hidden;
 }
 
 .supermarket-items {
-  min-height: 200px;
   margin-top: 15px;
+  min-height: 200px;
+  overflow: hidden;
 }
 
 .supermarket-items > div {
   margin-bottom: 15px;
 }
 
+.supermarket-items iframe {
+  border: 1px solid #EBEBEB;
+  border-radius: 4px;
+}
+
 .supermarket-items > .loading:after {
   margin-top: 84px;
 }
 
+.actions {
+  margin-top: 38px;
+  text-align: right;
+}
+
+.actions a:link {
+    text-decoration: none;
+}
 
 /*
 * IMAGE GALLERY
