@@ -37,7 +37,33 @@
       }).error(deferred.reject)
 
       return deferred.promise()
+    }
+  }
 
+  function JSONP(url) {
+    if (!url) throw "You must provide an URL to request (JSONP)."
+    this.url = encodeURIComponent(url)
+  }
+
+  JSONP.prototype = {
+    select: function (whereClause) {
+      var deferred = jQuery.Deferred()
+      var selector = whereClause.xpath
+
+      jQuery.ajax({
+        url: 'https://jsonp.afeld.me/?callback=?&url=' + this.url,
+        dataType: 'jsonp'
+      }).done(function (content) {
+        if (content && content.data) {
+          deferred.resolve(
+            jQuery(content.data).find(selector)
+          )
+        } else {
+          deferred.reject('No results found')
+        }
+      }).error(deferred.reject)
+
+      return deferred.promise()
     }
   }
 
@@ -128,17 +154,6 @@
       extractOffers: function (results) { return results.img.length ? results.img : [results.img] }
     },
     {
-      key   : 'disco',
-      name  : 'Disco',
-      link  : 'http://www.disco.com.ar/ofertas-Capital-Federal-y-GBA_26.html',
-      select: '//li[@class="thumbnails"]/img',
-      extractOffers: function (results) {
-        return results.img.map(function (img) {
-          return { src: 'http://www.disco.com.ar/' + img.src.replace('/small/', '/org/') }
-        })
-      }
-    },
-    {
       key   : 'coto',
       name  : 'Coto',
       link  : 'http://www.coto.com.ar/ofertas/semanal/ie.html',
@@ -153,7 +168,19 @@
       key   : 'dia',
       name  : 'Dia',
       link  : 'https://www.supermercadosdia.com.ar/ahorramesdia/',
-      select: '//img[contains(@class, "aligncenter")]',
+      select: 'img.aligncenter',
+      jsonp : true,
+      extractOffers: function (results) {
+        return results.map(function(index, img) {
+          return { src: img.src }
+        }).toArray()
+      }
+    },
+    {
+      key   : 'disco',
+      name  : 'Disco',
+      link  : 'https://www.disco.com.ar/Comprar/Home.aspx#_atCategory=true&_atGrilla=false&_id=75',
+      select: '//div[@class="owl-item"]/img[@class="desktop"]',
       extractOffers: function (results) { return results.img }
     },
     {
@@ -169,8 +196,9 @@
 
   var promises = SUPERMARKETS.map(function (supermarket, index) {
     template.render(supermarket)
+    var Client = supermarket.jsonp ? JSONP : YQL
 
-    return new YQL(supermarket.link)
+    return new Client(supermarket.link)
       .select({ xpath: supermarket.select })
       .done(function (results) {
         var images = supermarket.extractOffers(results)
