@@ -6,9 +6,12 @@
   <title>Todas las ofertas de Supermercados</title>
 
   <meta name="description" content="Ofertas de supermercados agregadas en un solo lugar para conveniencia del consumidor">
+  <meta name="author" content="Nicolás Santángelo">
 
   <meta property="og:title" content="Todas las ofertas de Supermercados" />
   <meta property="og:description" content="Ofertas de supermercados agregadas en un solo lugar para conveniencia del consumidor" />
+  <meta property="og:type" content="article" />
+  <meta property="og:locale" content=es_AR />
 
   <link rel="shortcut icon" type="image/ico" href="favicon.png" />
 
@@ -37,11 +40,23 @@
             <a class="js-supermarket-nav" href="#jumbo">Jumbo</a>
           </li>
         </ul>
+
+        <ul id="js-social-buttons" class="social-buttons cf pull-right">
+          <li>
+            <small><a href="https://www.preciosclaros.gob.ar" class="preciosclaros" target="_blank">Precios Claros</a></small>
+          </li>
+          <li>
+            <a href="http://twitter.com/share" class="socialite twitter-share" data-url="http://nicosantangelo.github.io/ofertas" data-count="vertical" rel="nofollow" target="_blank"><span class="hidden">Share on Twitter</span></a>
+          </li>
+          <li>
+            <a href="http://www.facebook.com/sharer.php?u=url&=post_title" class="socialite facebook-share" data-href="http://nicosantangelo.github.io/ofertas" data-send="true" data-layout="button" data-type="button" data-width="60" data-show-faces="false" rel="external nofollow"><span class="hidden">Share on Facebook</span></a>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>
 
-  <div id="main" class="container main">
+  <div id="js-main" class="container main">
     <template id="js-supermarket-template">
       <div id="{{=key}}" class="supermarket">
         <div class="row">
@@ -74,7 +89,10 @@
   <script src="js/jquery-2.2.3.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/t.min.js"></script>
+  <script src="js/imagesloaded.min.js"></script>
+
   <script src="js/main.js"></script>
+  <script src="js/socialite.min.js" async></script>
   <script src="js/lightbox.custom.min.js"></script>
   <script>
     lightbox.option({

@@ -192,7 +192,7 @@
     }
   ]
 
-  var template = new Template('#main')
+  var template = new Template('#js-main')
 
   var promises = SUPERMARKETS.map(function (supermarket, index) {
     template.render(supermarket)
@@ -229,35 +229,51 @@
     window.scrollTo(0, 0)
     $('body').scrollspy({ target: '#navbar-supermarkets', offset: 60 })
     document.getElementById('js-main-loading').remove()
+
+    imagesLoaded(document.getElementById("js-main"), function () {
+      jQuery("#js-social-buttons").trigger('mouseover')
+    })
   })
 
-  $(".js-supermarket-nav").on('click', function(event) {
+  jQuery(".js-supermarket-nav").on('click', function(event) {
    var hash = this.hash
    event.preventDefault()
 
-    $('html, body').animate({
-      scrollTop: $(hash).offset().top
+    jQuery('html, body').animate({
+      scrollTop: jQuery(hash).offset().top
     }, 300, function(){
        window.location.hash = hash
     })
   })
 
-  $("#main").on('click', '.js-supermarket-hide', function(event) {
-    var selector = $(this).data('selector')
+  jQuery("#js-main")
+    .on('click', '.js-supermarket-hide', function(event) {
+      var selector = jQuery(this).data('selector')
 
-    this.innerText = {
-      'Ocultar ↑': 'Mostrar ↓',
-      'Mostrar ↓': 'Ocultar ↑'
-    }[this.innerText]
+      this.innerText = {
+        'Ocultar ↑': 'Mostrar ↓',
+        'Mostrar ↓': 'Ocultar ↑'
+      }[this.innerText]
 
-    $(selector).toggleClass('collapse')
-    event.preventDefault()
-  })
+      jQuery(selector).toggleClass('collapse')
+      event.preventDefault()
+    })
+    .on('click', '.js-caption-link', function(event) {
+      var selector = jQuery(this).data('selector')
+      jQuery(selector).click()
+      event.preventDefault()
+    })
 
-  $("#main").on('click', '.js-caption-link', function(event) {
-    var selector = $(this).data('selector')
-    $(selector).click()
-    event.preventDefault()
+  jQuery("#js-social-buttons").one('mouseover', function startSocialSharing () {
+    if (typeof Socialite === 'undefined') {
+      setTimeout(startSocialSharing, 100)
+    } else {
+      Socialite.setup({
+        facebook: { lang: 'es_LA' },
+        twitter : { lang: 'es_LA' }
+      })
+      Socialite.load()
+    }
   })
 
   function isElementInViewport(el) {

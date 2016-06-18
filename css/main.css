@@ -131,3 +131,27 @@ body {
   position: relative;
   color: #FFF;
 }
+
+/*
+* SOCIAL BUTTONS
+*/
+
+.social-buttons { display: block; list-style: none; margin-top: 15px; padding: 0; }
+.social-buttons > li { display: block; margin: 0; padding-right: 10px; float: left; overflow: hidden; }
+.social-buttons .socialite { display: block; position: relative; background: url('../img/social-sprite.png') 0 0 no-repeat; }
+.social-buttons .socialite-loaded { background: none !important; }
+
+.social-buttons .twitter-share { width: 70px; height: 20px; background-position: 12px -1px; }
+.social-buttons .facebook-share { width: 80px; height: 20px; background-position: -57px -1px; }
+
+.social-buttons .preciosclaros {
+  color: #9d9d9d;
+  overflow: hidden;
+  display: inline-block;
+  padding-top: 2px;
+}
+.social-buttons .preciosclaros:hover {
+  color: #FFF;
+  text-decoration: none;
+}
+
