@@ -238,11 +238,11 @@
 
   jQuery.when.apply(jQuery, promises).always(function () {
     window.scrollTo(0, 0)
-    $('body').scrollspy({ target: '#navbar-supermarkets', offset: 60 })
-    document.getElementById('js-main-loading').remove()
+    jQuery('body').scrollspy({ target: '#navbar-supermarkets', offset: 60 })
 
     imagesLoaded(document.getElementById("js-main"), function () {
       jQuery("#js-social-buttons").trigger('mouseover')
+      jQuery('#js-main-loading').fadeOut('fast')
     })
   })
 

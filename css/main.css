@@ -26,6 +26,16 @@ body {
   background: url(../img/loading.gif) no-repeat;
 }
 
+.nav-loading.loading {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+}
+
+.nav-loading.loading:after {
+  background: url(../img/navloading.gif) no-repeat;
+}
+
 .supermarket {
   padding-top: 50px;
 }
