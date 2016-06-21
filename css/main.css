@@ -24,7 +24,7 @@ body {
 }
 
 .header-dropdown {
-  margin-top: 12px;
+  margin-top: 13px;
 }
 .header-dropdown button {
   background: none;
@@ -57,11 +57,20 @@ body {
   background: url(../img/navloading.gif) no-repeat;
 }
 
+@media (max-width: 970px) {
+  .nav-loading.loading {
+    left: 60%;
+  }
+}
+
 .supermarket {
   padding-top: 50px;
 }
 
 @media (max-width: 768px) {
+  .nav-loading.loading {
+    left: 50%;
+  }
   .supermarket h1 {
     font-size: 28px;
   }
@@ -192,7 +201,7 @@ body {
   color: #9d9d9d;
   overflow: hidden;
   display: inline-block;
-  padding-top: 2px;
+  padding-top: 3px;
 }
 .social-buttons .preciosclaros:hover {
   color: #FFF;
