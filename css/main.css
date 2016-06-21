@@ -3,6 +3,12 @@ body {
   position: relative;
 }
 
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 20px;
+  }
+}
+
 .inline {
   display: inline-block;
 }
@@ -15,6 +21,21 @@ body {
   background: #F2F2F2;
   display: block;
   text-align: center;
+}
+
+.header-dropdown {
+  margin-top: 12px;
+}
+.header-dropdown button {
+  background: none;
+  border: none;
+  color: #FFF;
+}
+.header-dropdown-menu {
+  background-color: #222; 
+}
+.header-dropdown-menu>li>a {
+  color: #FFF;
 }
 
 .loading:after {
@@ -38,6 +59,12 @@ body {
 
 .supermarket {
   padding-top: 50px;
+}
+
+@media (max-width: 768px) {
+  .supermarket h1 {
+    font-size: 28px;
+  }
 }
 
 .supermarket-items {
@@ -66,6 +93,13 @@ body {
 
 .actions a:link {
     text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .actions {
+    margin-top: 32px;
+    font-size: 13px;
+  }
 }
 
 /*
@@ -165,3 +199,13 @@ body {
   text-decoration: none;
 }
 
+
+/*
+* SANE BOOTSTRAP
+*/
+
+@media (max-width: 768px) {
+  .inline.visible-xs {
+    display: inline-block!important;
+  }
+}
