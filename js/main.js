@@ -23,7 +23,7 @@
       var deferred = jQuery.Deferred()
 
       jQuery.ajax({
-        url: 'http://query.yahooapis.com/v1/public/yql',
+        url: '//query.yahooapis.com/v1/public/yql',
         data: {
           q: query,
           format: 'json'
@@ -70,19 +70,20 @@
   //
   //
 
-  var Template = function (rootSelector) {
-    this.rootSelector = rootSelector || 'body'
-    this.html = document.getElementById('js-supermarket-template').innerHTML
-    this.template = new t(this.html)
-  }
+  var template = (function (rootSelector) {
+    var template = new t(
+      document.getElementById('js-supermarket-template').innerHTML
+    )
 
-  Template.prototype = {
-    render: function (data) {
-      jQuery(this.rootSelector).append(
-        this.template.render(data)
-      )
+    return {
+      render: function (data) {
+        jQuery(rootSelector).append(
+          template.render(data)
+        )
+      }
     }
-  }
+  })('#js-main')
+
 
   //
   //
@@ -120,8 +121,8 @@
 
     iframe: function (attrs) {
       var $iframe = $('<iframe>', {
-        src: attrs.src,
-        width: attrs.width,
+        src   : attrs.src,
+        width : attrs.width,
         height: attrs.height
       })
       .css('display', 'none')
@@ -138,6 +139,54 @@
 
     loading: function () {
       jQuery(this.el).find('.placeholder').addClass('loading')
+    }
+  }
+
+  //
+  //
+
+  function Supermarket(attrs) {
+    var Client  = attrs.jsonp ? JSONP : YQL
+    this.attrs  = attrs
+    this.client = new Client(attrs.link)
+  }
+
+  Supermarket.prototype = {
+    render: function () {
+      template.render(this.attrs)
+      return this.load()
+    },
+
+    load: function () {
+      return this.client
+        .select({ xpath: this.attrs.select })
+        .done(this.appendFromResults.bind(this))
+        .fail(this.appendFallbackIframe.bind(this))
+    },
+
+    appendFromResults: function (results) {
+      var images = this.attrs.extractOffers(results)
+      new HtmlContainer(this.attrs.key).appendImages(images)
+    },
+
+    appendFallbackIframe: function (error) {
+      var container = new HtmlContainer(this.attrs.key)
+      var event = 'DOMContentLoaded load resize scroll.' + this.attrs.key
+      container.placeholder()
+
+      $(window).on(event, function () {
+        if(isElementInViewport(container.el)) {
+          container.loading()
+
+          container.iframe({
+            src   : this.attrs.link,
+            width : '100%',
+            height: '1000'
+          })
+
+          $(window).off(event)
+        }
+      }.bind(this))
     }
   }
 
@@ -188,52 +237,23 @@
       }
     },
     {
+      key   : 'jumbo',
+      name  : 'Jumbo',
+      link  : 'https://www.jumbo.com.ar/Comprar/Home.aspx#_atCategory=true&_atGrilla=false&_id=5',
+      select: '//div[@class="owl-item"]/img[@class="desktop"]',
+      extractOffers: function (results) { return results.img }
+    },
+    {
       key   : 'disco',
       name  : 'Disco',
       link  : 'https://www.disco.com.ar/Comprar/Home.aspx#_atCategory=true&_atGrilla=false&_id=75',
       select: '//div[@class="owl-item"]/img[@class="desktop"]',
       extractOffers: function (results) { return results.img }
     },
-    {
-      key   : 'jumbo',
-      name  : 'Jumbo',
-      link  : 'https://www.jumbo.com.ar/Comprar/Home.aspx#_atCategory=true&_atGrilla=false&_id=5',
-      select: '//div[@class="owl-item"]/img[@class="desktop"]',
-      extractOffers: function (results) { return results.img }
-    }
   ]
 
-  var template = new Template('#js-main')
-
-  var promises = SUPERMARKETS.map(function (supermarket, index) {
-    template.render(supermarket)
-    var Client = supermarket.jsonp ? JSONP : YQL
-
-    return new Client(supermarket.link)
-      .select({ xpath: supermarket.select })
-      .done(function (results) {
-        var images = supermarket.extractOffers(results)
-        new HtmlContainer(supermarket.key).appendImages(images)
-      })
-      .fail(function (error) {
-        var event = 'DOMContentLoaded load resize scroll.' + supermarket.key
-        var container = new HtmlContainer(supermarket.key)
-        container.placeholder()
-
-        $(window).on(event, function () {
-          if(isElementInViewport(container.el)) {
-            container.loading()
-
-            container.iframe({
-              src   : supermarket.link,
-              width : '100%',
-              height: '1000'
-            })
-
-            $(window).off(event)
-          }
-        })
-      })
+  var promises = SUPERMARKETS.map(function (attributes) {
+    return new Supermarket(attributes).render()
   })
 
   jQuery.when.apply(jQuery, promises).always(function () {
@@ -242,7 +262,7 @@
 
     imagesLoaded(document.getElementById("js-main"), function () {
       jQuery("#js-social-buttons").trigger('mouseover')
-      jQuery('#js-main-loading').fadeOut('fast')
+      jQuery('#js-loading').fadeOut('fast')
     })
   })
 
