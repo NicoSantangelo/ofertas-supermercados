@@ -10,7 +10,7 @@ var del = require('del')
 var paths = {
   copy: ['js/vendor/*.js', 'css/vendor/*.css'],
   js: ['js/*.js'],
-  vendorjs: ['js/vendor/t.min.js', 'js/vendor/socialite.min.js'],
+  vendorjs: ['js/vendor/lightbox.custom.min.js', 'js/vendor/t.min.js', 'js/vendor/socialite.min.js'],
   css: 'css/*.css',
   vendorcss: 'css/vendor/*.css',
   images: 'img/*'
@@ -52,9 +52,10 @@ gulp.task('images', ['clean'], function() {
 })
 
 gulp.task('watch', function() {
-  gulp.watch(paths.js, ['scripts'])
-  gulp.watch(paths.images, ['images'])
-  gulp.watch(paths.css, ['styles'])
+  gulp.watch(
+    paths.js.concat(paths.css).concat(paths.images),
+    ['build']
+  )
 })
 
 gulp.task('fonts', ['clean'], function() {
