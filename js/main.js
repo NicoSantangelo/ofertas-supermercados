@@ -1,4 +1,9 @@
 (function() {
+  'use strict'
+
+  //
+  // Requests to the web. Using YQL of JSONP
+
   function YQL(url) {
     if (!url) throw "You must provide an URL to scrape (YQL)."
     this.url = url
@@ -68,25 +73,52 @@
   }
 
   //
-  //
+  // Template singleton
 
-  var template = (function (rootSelector) {
-    var template = new t(
-      document.getElementById('js-supermarket-template').innerHTML
-    )
-
-    return {
-      render: function (data) {
-        jQuery(rootSelector).append(
-          template.render(data)
-        )
-      }
+  var template = {
+    render: function (name, data) {
+      var htmlTemplate = new t(
+        document.getElementById('js-' + name + '-template').innerHTML
+      )
+      return htmlTemplate.render(data)
     }
-  })('#js-main')
+  }
+
+  //
+  // Iframe singleton
+
+  var iframe = {
+    _loading: false,
+    load: function (attrs, parent) {
+      if (iframe._loading) {
+        setTimeout(iframe.load.bind(iframe, attrs, parent), 1000)
+        return
+      } else {
+        iframe._loading = true
+      }
+
+      var $iframe = jQuery('<iframe>', {
+        src   : attrs.src,
+        width : attrs.width,
+        height: attrs.height
+      })
+      .css('display', 'none')
+
+      var $placeholder = jQuery(parent).find('.placeholder.loading')
+
+      $placeholder.children().replaceWith($iframe)
+
+      $iframe.load(function () {
+        $placeholder.removeClass('placeholder loading')
+        $iframe.slideDown()
+        iframe._loading = false
+      })
+    }
+  }
 
 
   //
-  //
+  // Helps building the element that contains the data
 
   var HtmlContainer = function (type) {
     this.type = type
@@ -114,27 +146,14 @@
         .appendTo(this.el)
     },
 
-    placeholder: function () {
-      jQuery('<div>', { 'class': 'col-xs-12 placeholder' }) //FUUUU
+    placeholder: function (child) {
+      jQuery('<div>', { 'class': 'col-xs-12 placeholder' })
+        .append(child)
         .appendTo(this.el)
     },
 
     iframe: function (attrs) {
-      var $iframe = $('<iframe>', {
-        src   : attrs.src,
-        width : attrs.width,
-        height: attrs.height
-      })
-      .css('display', 'none')
-
-      var $placeholder = jQuery(this.el)
-        .find('.placeholder.loading')
-        .append($iframe)
-
-      $iframe.load(function () {
-        $placeholder.removeClass('placeholder loading')
-        $iframe.slideDown()
-      })
+      iframe.load(attrs, this.el)
     },
 
     loading: function () {
@@ -143,7 +162,7 @@
   }
 
   //
-  //
+  // Uses the other objects to show supermarket data on the DOM
 
   function Supermarket(attrs) {
     var Client  = attrs.jsonp ? JSONP : YQL
@@ -153,7 +172,9 @@
 
   Supermarket.prototype = {
     render: function () {
-      template.render(this.attrs)
+      jQuery('#js-main').append(
+        template.render('supermarket', this.attrs)
+      )
       return this.load()
     },
 
@@ -170,29 +191,40 @@
     },
 
     appendFallbackIframe: function (error) {
+      var link = this.attrs.link
       var container = new HtmlContainer(this.attrs.key)
-      var event = 'DOMContentLoaded load resize scroll.' + this.attrs.key
-      container.placeholder()
+      var noticeHTML = template.render('notice', { link: link })
+      
+      if (isSafari()) {
+        container.placeholder(noticeHTML)
+        return
+      }
 
-      $(window).on(event, function () {
-        if(isElementInViewport(container.el)) {
+      var placeholderChild = jQuery('<span>', {
+        "class": 'js-iframe-notice',
+        "html": noticeHTML + ' o '
+      })
+
+      var loadIframeLink = jQuery('<a>', {
+          href: link,
+          text: 'cargarlo aquí'
+        }).on('click', function () {
           container.loading()
-
           container.iframe({
-            src   : this.attrs.link,
+            src   : link,
             width : '100%',
             height: '1000'
           })
+          return false
+        })
+        .appendTo(placeholderChild)
 
-          $(window).off(event)
-        }
-      }.bind(this))
+      container.placeholder(placeholderChild)
     }
   }
 
   //
-  // Render
-  //
+  // Fetch and render
 
   var SUPERMARKETS = [
     {
@@ -261,10 +293,17 @@
     jQuery('body').scrollspy({ target: '#navbar-supermarkets', offset: 60 })
 
     imagesLoaded(document.getElementById("js-main"), function () {
-      jQuery("#js-social-buttons").trigger('mouseover')
+      setTimeout(function () {
+        jQuery("#js-social-buttons").trigger('mouseover')
+      }, 1000)
+
       jQuery('#js-loading').fadeOut('fast')
+      jQuery('#js-footer').removeClass('hidden')
     })
   })
+
+  //
+  // Animate scroll navigation
 
   jQuery(".js-supermarket-nav").on('click', function(event) {
    var hash = this.hash
@@ -276,6 +315,9 @@
        window.location.hash = hash
     })
   })
+
+  //
+  // Actions to the right, show/hide content
 
   jQuery("#js-main")
     .on('click', '.js-supermarket-hide', function(event) {
@@ -295,17 +337,24 @@
       event.preventDefault()
     })
 
-  jQuery("#js-social-buttons").one('mouseover', function startSocialSharing () {
-    if (typeof Socialite === 'undefined') {
-      setTimeout(startSocialSharing, 100)
-    } else {
-      Socialite.setup({
-        facebook: { lang: 'es_LA' },
-        twitter : { lang: 'es_LA' }
-      })
-      Socialite.load()
-    }
+  //
+  // Share on TWT/FB
+
+  jQuery("#js-social-buttons").one('mouseover', function() {
+    Socialite.setup({
+      facebook: { lang: 'es_LA' },
+      twitter : { lang: 'es_LA' }
+    })
+    Socialite.load()
   })
+
+  //
+  // Lightbox
+
+  lightbox.option({ albumLabel: '%1 / %2' })
+
+  //
+  // Utils
 
   function isElementInViewport(el) {
     var rect = el.getBoundingClientRect()
@@ -316,5 +365,13 @@
       rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
       rect.right <= (window.innerWidth || document.documentElement.clientWidth)
     )
+  }
+
+  function isSafari() {
+    // This is really awful.
+    // Safari can't load some iframes properly because of the way they handle redirection to set cookies
+    // Instead of just removing the iframes for all browsers, try to detect Safari and break early
+    return navigator.vendor && navigator.vendor.indexOf('Apple') > -1 &&
+           navigator.userAgent && !navigator.userAgent.match('CriOS')
   }
 })()

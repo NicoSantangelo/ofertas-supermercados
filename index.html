@@ -30,7 +30,7 @@
         <li><a class="js-supermarket-nav" href="#disco">Disco</a></li>
       </ul>
 
-      <div class="dropdown header-dropdown inline visible-xs">
+      <div class="dropdown header-dropdown visible-xs pull-left">
         <button class="dropdown-toggle" type="button" id="header-xs-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
           Supermercados <span class="caret"></span>
         </button>
@@ -64,12 +64,11 @@
     <template id="js-supermarket-template">
       <div id="{{=key}}" class="supermarket">
         <div class="row">
-          <div class="col-xs-9 col-sm-8">
+          <div class="col-xs-7 col-sm-8">
             <h1 class="inline">{{=name}}</h1>&nbsp;
-            <small><a href="{{=link}}">link</a></small>
           </div>
-          <div class="col-xs-3 col-sm-4 actions">
-            <a class="hidden-xs js-supermarket-toggle" href="{{=link}}">Cargar sitio</a>&nbsp;
+          <div class="col-xs-5 col-sm-4 actions">
+            <a href="{{=link}}" target="_blank">Visitar sitio</a>&nbsp;
             <a class="js-supermarket-hide" href="#" data-selector="#js-{{=key}}-items, #{{=key}} .js-caption">Ocultar ↑</a>
           </div>
         </div>
@@ -83,16 +82,27 @@
         <div id="js-{{=key}}-items" class="row supermarket-items"></div>
       </div>
     </template>
+
+    <template id="js-notice-template">
+      ¡No pudimos obtener información de este sitio!
+      <br/>
+      Puede ingresar haciendo <a href="{{=link}}" target="_blank">click aquí</a>
+    </template>
   </div>
 
-  <footer class="visible-xs container">
-    <hr />
+  <footer id="js-footer" class="hidden container">
+    <hr class="no-margin" />
 
-    <div class="row">
-      <div class="col-xs-6 text-center">
+    <div class="row footer-row">
+      <div class="col-xs-4 visible-xs text-center">
         <a href="http://twitter.com/share" class="socialite twitter-share" data-url="http://nicosantangelo.github.io/ofertas" data-count="vertical" rel="nofollow" target="_blank"><span class="hidden">Share on Twitter</span></a>
       </div>
-      <div class="col-xs-6 text-center">
+      <div class="col-xs-4 col-sm-12 text-center">
+        <a href="https://nicosantangelo.github.io/portfolio/" class="text-muted" target="_blank"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span></a>
+        &nbsp;&nbsp;
+        <a href="mailto:santangelonicolas@gmail.com?subject=Duda sitio de ofertas" class="text-muted"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></a>
+      </div>
+      <div class="col-xs-4 visible-xs text-center">
         <a href="http://www.facebook.com/sharer.php?u=url&=post_title" class="socialite facebook-share" data-href="http://nicosantangelo.github.io/ofertas" data-send="true" data-layout="button" data-type="button" data-width="60" data-show-faces="false" rel="external nofollow"><span class="hidden">Share on Facebook</span></a>
       </div>
     </div>
