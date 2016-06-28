@@ -78,7 +78,11 @@ body {
     left: 50%;
   }
   .supermarket h1 {
-    font-size: 28px;
+    font-size: 27px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline;
   }
 }
 
@@ -112,7 +116,7 @@ body {
 
 @media (max-width: 768px) {
   .actions {
-    margin-top: 32px;
+    margin-top: 9px;
     font-size: 13px;
   }
 }
