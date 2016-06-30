@@ -76,8 +76,10 @@
   // Template singleton
 
   var template = {
+    // Avoid external scripts from overriding the global template object
+    t: t,
     render: function (name, data) {
-      var htmlTemplate = new t(
+      var htmlTemplate = new template.t(
         document.getElementById('js-' + name + '-template').innerHTML
       )
       return htmlTemplate.render(data)
