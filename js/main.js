@@ -171,9 +171,7 @@
   // Uses the other objects to show supermarket data on the DOM
 
   function Supermarket(attrs) {
-    var Client  = attrs.jsonp ? JSONP : YQL
     this.attrs  = attrs
-    this.client = new Client(attrs.link)
   }
 
   Supermarket.prototype = {
@@ -185,14 +183,27 @@
     },
 
     load: function () {
-      return this.client
-        .select({ xpath: this.attrs.select })
+      return this.select()
         .done(this.appendFromResults.bind(this))
         .fail(this.appendFallbackIframe.bind(this))
     },
 
+    select: function () {
+      var Client = this.attrs.jsonp ? JSONP : YQL
+
+      if (this.attrs.links) {
+        var promises = this.attrs.links.map(function(link) {
+          return new Client(link).select({ xpath: this.attrs.select })
+        }, this)
+
+        return jQuery.when.apply(jQuery, promises)
+      } else {
+        return new Client(this.attrs.link).select({ xpath: this.attrs.select })
+      }
+    },
+
     appendFromResults: function (results) {
-      var images = this.attrs.extractOffers(results)
+      var images = this.attrs.extractOffers(arguments.length === 1 ? results : Array.prototype.slice.call(arguments))
       new HtmlContainer(this.attrs.key).appendImages(images)
     },
 
@@ -254,32 +265,18 @@
     {
       key   : 'dia',
       name  : 'Dia',
-      link  : 'https://www.supermercadosdia.com.ar/category/dia-market',
+      links : [
+        'https://www.supermercadosdia.com.ar/category/dia-market',
+        'https://www.supermercadosdia.com.ar/category/dia-mini',
+        'https://www.supermercadosdia.com.ar/category/dia-plus'
+      ],
       select: '//ul[contains(@class, "slides")]/li/img',
-      extractOffers: function (results) {
-        return results.img.map(function (img) {
-          return { src: img.src }
-        })
-      }
-    },
-    {
-      key   : 'diamini',
-      name  : 'Dia (mini)',
-      link  : 'https://www.supermercadosdia.com.ar/category/dia-mini',
-      select: '//ul[contains(@class, "slides")]/li/img',
-      extractOffers: function (results) {
-        return results.img.map(function (img) {
-          return { src: img.src }
-        })
-      }
-    },
-    {
-      key   : 'diaplus',
-      name  : 'Dia (plus)',
-      link  : 'https://www.supermercadosdia.com.ar/category/dia-plus/',
-      select: '//ul[contains(@class, "slides")]/li/img',
-      extractOffers: function (results) {
-        return results.img.map(function (img) {
+      extractOffers: function (resultsArray) {
+        var results = resultsArray.reduce(function (acum, response) {
+          return acum.concat(response.img)
+        }, [])
+
+        return results.map(function(img) {
           return { src: img.src }
         })
       }
