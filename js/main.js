@@ -19,7 +19,9 @@
     buildQuery: function (whereClause) {
       var where = "where url='" + this.url + "'"
       for(var prop in whereClause) {
-        where += " and " + prop + " = '" + whereClause[prop] + "'"
+        if (whereClause[prop]) {
+          where += " and " + prop + " = '" + whereClause[prop] + "'"
+        }
       }
       return "select * from html " + where
     },
@@ -28,11 +30,13 @@
       var deferred = jQuery.Deferred()
 
       jQuery.ajax({
-        url: '//query.yahooapis.com/v1/public/yql',
+        url: 'https://query.yahooapis.com/v1/public/yql',
         data: {
           q: query,
-          format: 'json'
-        }
+          format: 'json',
+          jsonCompat: 'new',
+        },
+        dataType: 'jsonp'
       }).done(function (content) {
         if (content.query && content.query.count) {
           deferred.resolve(content.query.results)
@@ -250,13 +254,43 @@
     {
       key   : 'dia',
       name  : 'Dia',
-      link  : 'https://www.supermercadosdia.com.ar/ahorramesdia/',
-      select: 'img.aligncenter',
-      jsonp : true,
+      link  : 'https://www.supermercadosdia.com.ar/category/dia-market',
+      select: '//ul[contains(@class, "slides")]/li/img',
       extractOffers: function (results) {
-        return results.map(function(index, img) {
+        return results.img.map(function (img) {
           return { src: img.src }
-        }).toArray()
+        })
+      }
+    },
+    {
+      key   : 'diamini',
+      name  : 'Dia (mini)',
+      link  : 'https://www.supermercadosdia.com.ar/category/dia-mini',
+      select: '//ul[contains(@class, "slides")]/li/img',
+      extractOffers: function (results) {
+        return results.img.map(function (img) {
+          return { src: img.src }
+        })
+      }
+    },
+    {
+      key   : 'diaplus',
+      name  : 'Dia (plus)',
+      link  : 'https://www.supermercadosdia.com.ar/category/dia-plus/',
+      select: '//ul[contains(@class, "slides")]/li/img',
+      extractOffers: function (results) {
+        return results.img.map(function (img) {
+          return { src: img.src }
+        })
+      }
+    },
+    {
+      key   : 'diaahorrames',
+      name  : 'Dia (ahorrames)',
+      link  : 'https://www.supermercadosdia.com.ar/ahorramesdia/',
+      select: '//img[contains(@class, "aligncenter")]',
+      extractOffers: function (result) {
+        return [{ src: result.img.src }]
       }
     },
     {
