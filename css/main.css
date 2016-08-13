@@ -94,6 +94,8 @@ body {
 
 .supermarket-items > div {
   margin-bottom: 15px;
+  max-height: 510px;
+  overflow: hidden;
 }
 
 .supermarket-items iframe {
