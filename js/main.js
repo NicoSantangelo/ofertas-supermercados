@@ -239,22 +239,11 @@
     {
       key   : 'coto',
       name  : 'Coto',
-      link  : 'http://www.coto.com.ar/ofertas/semanal/ie.html',
+      link  : 'http://www.coto.com.ar/ofertas/revista-de-ofertas/ie.html',
       select: '//div[contains(@class, "list_images")]/img',
       extractOffers: function (results) {
         return results.img.map(function (img) {
           return { src: 'http://www.coto.com.ar/ofertas/semanal/' + img.src }
-        })
-      }
-    },
-    {
-      key   : 'cotomarcalider',
-      name  : 'Coto (Marca líder)',
-      link  : 'http://www.coto.com.ar/ofertas/marca-lider/ie.html',
-      select: '//div[contains(@class, "list_images")]/img',
-      extractOffers: function (results) {
-        return results.img.map(function (img) {
-          return { src: 'http://www.coto.com.ar/ofertas/marca-lider/' + img.src }
         })
       }
     },
