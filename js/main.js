@@ -147,9 +147,14 @@
         'data-lightbox': this.type
       }).append(img)
 
-      jQuery('<div>', { 'class': 'col-xs-12 col-sm-6 col-md-4' })
-        .append($a)
-        .appendTo(this.el)
+      jQuery('<div>', {
+        'class'         : 'col-xs-12 col-sm-6 col-md-4',
+        'data-toggle'   : 'tooltip',
+        'data-placement': 'top',
+        'title'         : attrs.title
+      })
+      .append($a)
+      .appendTo(this.el)
     },
 
     placeholder: function (child) {
@@ -265,6 +270,7 @@
     {
       key   : 'dia',
       name  : 'Dia',
+      link  : 'https://www.supermercadosdia.com.ar/ofertas/',
       links : [
         'https://www.supermercadosdia.com.ar/category/dia-market',
         'https://www.supermercadosdia.com.ar/category/dia-mini',
@@ -272,13 +278,18 @@
       ],
       select: '//ul[contains(@class, "slides")]/li/img',
       extractOffers: function (resultsArray) {
-        var results = resultsArray.reduce(function (acum, response) {
-          return acum.concat(response.img)
-        }, [])
+        var supermarkets = ['Dia Market', 'Dia Mini', 'Dia Plus']
+        var result = []
 
-        return results.map(function(img) {
-          return { src: img.src }
+        resultsArray.forEach(function (response, index) {
+          var title = supermarkets[index]
+
+          response.img.forEach(function (img) {
+            result.push({ src: img.src, title: title })
+          })
         })
+        
+        return result
       }
     },
     {
@@ -306,6 +317,9 @@
     },
   ]
 
+  //
+  // Load supermarket offers
+
   var promises = SUPERMARKETS.map(function (attributes) {
     return new Supermarket(attributes).render()
   })
@@ -321,6 +335,8 @@
 
       jQuery('#js-loading').fadeOut('fast')
       jQuery('#js-footer').removeClass('hidden')
+
+      jQuery('[data-toggle="tooltip"]').tooltip()
     })
   })
 
