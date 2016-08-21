@@ -284,6 +284,10 @@
         resultsArray.forEach(function (response, index) {
           var title = supermarkets[index]
 
+          if (! response.img.length) {
+            response.img = [response.img]
+          }
+
           response.img.forEach(function (img) {
             result.push({ src: img.src, title: title })
           })
