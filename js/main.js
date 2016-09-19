@@ -147,14 +147,16 @@
         'data-lightbox': this.type
       }).append(img)
 
-      jQuery('<div>', {
+      var $col = jQuery('<div>', {
         'class'         : 'col-xs-12 col-sm-6 col-md-4',
         'data-toggle'   : 'tooltip',
         'data-placement': 'top',
         'title'         : attrs.title
       })
-      .append($a)
-      .appendTo(this.el)
+      
+      $col.append($a).appendTo(this.el)
+
+      img.onerror = function() { $col.remove() }
     },
 
     placeholder: function (child) {
