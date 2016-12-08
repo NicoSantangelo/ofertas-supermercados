@@ -153,7 +153,7 @@
         'data-placement': 'top',
         'title'         : attrs.title
       })
-      
+
       $col.append($a).appendTo(this.el)
 
       img.onerror = function() { $col.remove() }
@@ -218,7 +218,7 @@
       var link = this.attrs.link
       var container = new HtmlContainer(this.attrs.key)
       var noticeHTML = template.render('notice', { link: link })
-      
+
       if (isSafari()) {
         container.placeholder(noticeHTML)
         return
@@ -294,7 +294,7 @@
             result.push({ src: img.src, title: title })
           })
         })
-        
+
         return result
       }
     },
@@ -372,7 +372,7 @@
         'Mostrar ↓': 'Ocultar ↑'
       }[this.innerText]
 
-      jQuery(selector).toggleClass('collapse')
+      jQuery(selector).toggleClass('hidden')
       event.preventDefault()
     })
     .on('click', '.js-caption-link', function(event) {
