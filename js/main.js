@@ -89,10 +89,10 @@
       jQuery.ajax({
         url: 'https://simple-cors.herokuapp.com/?url=' + this.url
       }).done(function (content) {
-        if (content) {
-          deferred.resolve({
-            img: jQuery('<div>').html(content).xpath(selector).toArray()
-          })
+        var img = content ? findxPathInHTMLString(content, selector) : []
+
+        if (img.length) {
+          deferred.resolve({ img: img })
         } else {
           deferred.reject('No results found')
         }
@@ -287,11 +287,12 @@
     {
       key   : 'coto',
       name  : 'Coto',
-      link  : 'http://www.coto.com.ar/ofertas/revista-de-ofertas/ie.html',
+      link  : 'http://www.coto.com.ar/ofe/ofe3/index.html',
       select: '//div[contains(@class, "list_images")]/img',
       extractOffers: function (results) {
         return results.img.map(function (img) {
-          return { src: 'http://www.coto.com.ar/ofertas/revista-de-ofertas/' + img.src }
+          var src = img.src.replace(img.baseURI, '')
+          return { src: 'http://www.coto.com.ar/ofe/ofe3/' + src }
         })
       }
     },
@@ -425,6 +426,10 @@
 
   //
   // Utils
+
+  function findxPathInHTMLString(html, xpath) {
+    return jQuery('<div>').html(html).xpath(xpath).toArray()
+  }
 
   function isElementInViewport(el) {
     var rect = el.getBoundingClientRect()
