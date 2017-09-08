@@ -1,2 +1,8 @@
 # added by GitSavvy
 /node_modules/
+
+/.sublime-gulp.cache
+
+/package-lock.json
+
+/*.TODO

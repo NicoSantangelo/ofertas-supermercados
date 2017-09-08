@@ -10,7 +10,7 @@ var del = require('del')
 var paths = {
   copy: ['js/vendor/*.js', 'css/vendor/*.css'],
   js: ['js/*.js'],
-  vendorjs: ['js/vendor/lightbox.custom.min.js', 'js/vendor/t.min.js', 'js/vendor/socialite.min.js'],
+  vendorjs: ['js/vendor/lightbox.custom.min.js', 'js/vendor/jquery.xpath.min.js', 'js/vendor/t.min.js', 'js/vendor/socialite.min.js'],
   css: 'css/*.css',
   vendorcss: 'css/vendor/*.css',
   images: 'img/*'

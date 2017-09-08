@@ -64,9 +64,35 @@
         dataType: 'jsonp'
       }).done(function (content) {
         if (content && content.data) {
-          deferred.resolve(
-            jQuery(content.data).find(selector)
-          )
+          deferred.resolve({
+            img: jQuery(content.data).find(selector).toArray()
+          })
+        } else {
+          deferred.reject('No results found')
+        }
+      }).error(deferred.reject)
+
+      return deferred.promise()
+    }
+  }
+
+  function CORS(url) {
+    if (!url) throw "You must provide an URL to request (CORS)."
+    this.url = encodeURIComponent(url)
+  }
+
+  CORS.prototype = {
+    select: function (whereClause) {
+      var deferred = jQuery.Deferred()
+      var selector = whereClause.xpath
+
+      jQuery.ajax({
+        url: 'https://simple-cors.herokuapp.com/?url=' + this.url
+      }).done(function (content) {
+        if (content) {
+          deferred.resolve({
+            img: jQuery('<div>').html(content).xpath(selector).toArray()
+          })
         } else {
           deferred.reject('No results found')
         }
@@ -196,7 +222,7 @@
     },
 
     select: function () {
-      var Client = this.attrs.jsonp ? JSONP : YQL
+      var Client = CORS // YQL, JSOP, ...
 
       if (this.attrs.links) {
         var promises = this.attrs.links.map(function(link) {
@@ -320,7 +346,7 @@
       link  : 'https://www.disco.com.ar/Comprar/Home.aspx#_atCategory=true&_atGrilla=false&_id=75',
       select: '//div[@class="owl-item"]/img[@class="desktop"]',
       extractOffers: function (results) { return results.img }
-    },
+    }
   ]
 
   //
